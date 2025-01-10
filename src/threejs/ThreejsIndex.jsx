@@ -7,8 +7,10 @@ import Box from "./components/Box";
 import PrimitivesModel from "./components/PrimitivesModel";
 import SceneGraph from "./components/SceneGraph";
 import Tank from "./components/Tank";
+import Lights from "./components/Lights";
+import Camera from "./components/Camera";
 
-const ThreejsIndex = () => {
+const ThreejsIndex = (props) => {
   const [currentPage, setCurrentPage] = useState("RotateCube");
 
   const pages = [
@@ -24,6 +26,8 @@ const ThreejsIndex = () => {
     },
     { id: "SceneGraph", component: <SceneGraph />, title: "Scene Graph" },
     { id: "Tank", component: <Tank />, title: "Tank" },
+    { id: "Lights", component: <Lights />, title: "Lights" },
+    { id: "Camera", component: <Camera />, title: "Camera" },
   ];
 
   return (
