@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-// import App from "./App";
+import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import ThreejsIndex from "./threejs/ThreejsIndex";
 import { Helmet } from "react-helmet";
+import { Canvas } from "@react-three/fiber";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -17,6 +18,7 @@ root.render(
       ></meta>
     </Helmet>
     <ThreejsIndex />
+    {/* <App /> */}
   </>
 );
 

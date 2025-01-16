@@ -9,9 +9,18 @@ import SceneGraph from "./components/SceneGraph";
 import Tank from "./components/Tank";
 import Lights from "./components/Lights";
 import Camera from "./components/Camera";
+import Shadows from "./components/Shadows";
+import Fog from "./components/Fog";
+import RenderTargets from "./components/RenderTargets";
+import RenderingOptimization from "./components/RenderingOptimization";
+import AnimationOptimization from "./components/AnimationOptimization";
+import GLTFLoader from "./components/GLTFLoader";
+import Baseball from "./components/Baseball";
+import Pitch from "./components/Pitch";
+import Design_1 from "./components/Design_1";
 
 const ThreejsIndex = (props) => {
-  const [currentPage, setCurrentPage] = useState("RotateCube");
+  const [currentPage, setCurrentPage] = useState("Pitch");
 
   const pages = [
     { id: "RotateCube", component: <RotateCube />, title: "Rotate Cube" },
@@ -28,6 +37,31 @@ const ThreejsIndex = (props) => {
     { id: "Tank", component: <Tank />, title: "Tank" },
     { id: "Lights", component: <Lights />, title: "Lights" },
     { id: "Camera", component: <Camera />, title: "Camera" },
+    { id: "Shadows", component: <Shadows />, title: "Shadows" },
+    { id: "Fog", component: <Fog />, title: "Fog" },
+    {
+      id: "RenderTargets",
+      component: <RenderTargets />,
+      title: "Render Targets",
+    },
+    {
+      id: "RenderingOptimization",
+      component: <RenderingOptimization />,
+      title: "Rendering Optimization",
+    },
+    {
+      id: "AnimationOptimization",
+      component: <AnimationOptimization />,
+      title: "Animation Optimization",
+    },
+    {
+      id: "GLTFLoader",
+      component: <GLTFLoader />,
+      title: "GLTF Loader",
+    },
+    { id: "Baseball", component: <Baseball />, title: "Baseball" },
+    { id: "Pitch", component: <Pitch />, title: "Pitch" },
+    { id: "Design_1", component: <Design_1 />, title: "Design_1" },
   ];
 
   return (
