@@ -9,47 +9,104 @@ function Design_1(props) {
     const canvas = document.querySelector("#c");
     const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
     renderer.setSize(window.innerWidth / 1.5, window.innerHeight / 1.5);
-    renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
+    // renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xb1e1ff);
 
     const camera = new THREE.PerspectiveCamera(
-      45,
+      75,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     );
     camera.position.y = 2;
-    camera.position.z = 22;
+    camera.position.z = 25;
 
-    const axesHelper = new THREE.AxesHelper(5);
-    scene.add(axesHelper);
+    // const axesHelper = new THREE.AxesHelper(5);
+    // scene.add(axesHelper);
 
-    const gridHelper = new THREE.GridHelper(80, 80);
-    scene.add(gridHelper);
+    // const gridHelper = new THREE.GridHelper(80, 80);
+    // scene.add(gridHelper);
 
     let stats = new Stats();
     document.body.append(stats.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0.7, 18);
+    controls.target.set(0, 1, 25);
+    // controls.target.set(0, 1, 10);
     controls.update();
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(0, 1, 1);
-    scene.add(light);
-
-    const ambientLight = new THREE.AmbientLight(0x404040);
+    // 환경광
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
+
+    // 태양광
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(0, 100, -100); // 빛의 위치
+    scene.add(directionalLight);
+    const helper = new THREE.DirectionalLightHelper(directionalLight);
+    scene.add(helper);
+
+    // 포인트 라이트
+    const pointLight = new THREE.PointLight(0xffffff, 1, 100); // 색상, 강도, 거리
+    pointLight.position.set(0, 10, 30);
+    scene.add(pointLight);
+    const helper2 = new THREE.PointLightHelper(pointLight);
+    scene.add(helper2);
 
     const loader = new GLTFLoader();
 
+    // 야구장 모델 로딩
     loader.load(
-      "models/design/baseball_stadium.glb",
+      "models/design/baseballstadium.glb",
       function (gltf) {
         const model = gltf.scene;
         model.scale.set(20, 20, 20);
+        model.position.set(0, 0, 6);
+        scene.add(model);
+      },
+      undefined,
+      function (error) {
+        console.error(error);
+      }
+    );
+
+    // 야구공 모델 로딩
+    loader.load(
+      "models/design/baseballnew.glb",
+      function (gltf) {
+        const model = gltf.scene;
+        // model.scale.set(20, 20, 20);
+        model.position.set(0, 2, 19);
+        scene.add(model);
+      },
+      undefined,
+      function (error) {
+        console.error(error);
+      }
+    );
+    // 야구공 모델 로딩
+    loader.load(
+      "models/design/ball.glb",
+      function (gltf) {
+        const model = gltf.scene;
+        // model.scale.set(20, 20, 20);
+        model.position.set(0, 2, 22);
+        scene.add(model);
+      },
+      undefined,
+      function (error) {
+        console.error(error);
+      }
+    );
+
+    // 스트라이크 존 모델 로딩
+    loader.load(
+      "models/design/strike_zone.glb",
+      function (gltf) {
+        const model = gltf.scene;
+        model.position.set(0, 0.2, 24);
         scene.add(model);
       },
       undefined,
