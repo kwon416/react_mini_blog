@@ -37,8 +37,8 @@ function Pitch() {
       0.1,
       100
     );
-    camera.position.set(0, 2, 14);
-
+    camera.position.set(0.2, 0.5, 13.5);
+    // camera.position.set(0, 0, -2);
     // 헬퍼 추가 (축, 그리드)
     scene.add(new THREE.AxesHelper(5), new THREE.GridHelper(80, 80));
 

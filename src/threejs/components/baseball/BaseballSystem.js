@@ -37,7 +37,7 @@ class BaseballSystem extends THREE.Group {
   setupBall() {
     const loader = new GLTFLoader();
     loader.load(
-      "/models/baseball/scene.gltf",
+      "/models/design/untitled.glb",
       (gltf) => {
         this.ball = gltf.scene;
         // Bounding Box 계산
@@ -46,15 +46,10 @@ class BaseballSystem extends THREE.Group {
         boundingBox.getSize(size);
 
         console.log("모델 크기:", size); // x = 너비, y = 높이, z = 깊이
-        // 모델 크기 조정 (필요에 따라 조정하세요)
 
-        this.ball.scale.set(
-          (this.ballRadius * 2) / size.x,
-          (this.ballRadius * 2) / size.y,
-          (this.ballRadius * 2) / size.z
-        );
-
-        // 공의 초기 위치가 반지름 만큼 아래로 내려가도록 설정
+        this.ball.scale.set(this.ballRadius, this.ballRadius, this.ballRadius);
+        console.log(this.ballRadius);
+        console.log("공 크기:", this.ball.scale);
 
         this.ball.position.copy(this.state.initialPosition);
 
@@ -100,44 +95,6 @@ class BaseballSystem extends THREE.Group {
     this.trajectoryGroup = new THREE.Group();
 
     this.add(this.trajectoryGroup);
-
-    // this.tubeMaterial = new THREE.MeshPhongMaterial({
-    //   color: 0xffffe0,
-    //   // transparent: true,
-    //   opacity: 0.9,
-    //   side: THREE.FrontSide,
-    //   depthWrite: false,
-    //   depthTest: false,
-    //   blending: THREE.AdditiveBlending,
-    // });
-  }
-
-  // 궤적 세그먼트 생성
-
-  createTrajectorySegment(startPos, endPos, curveHeight = 0.01) {
-    // 옵션 1. 배지어 커브
-    // 두 점 사이의 중간점 계산 (약간의 곡률을 주기 위해)
-    const midPoint = new THREE.Vector3()
-      .addVectors(startPos, endPos)
-      .multiplyScalar(0.5);
-    midPoint.y += curveHeight; // 곡률 추가
-    const curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, endPos);
-
-    // 옵션 2. 직선 경로
-    // const curve = new THREE.LineCurve3(startPos, endPos);
-
-    // 튜브 지오메트리 생성
-    const geometry = new THREE.TubeGeometry(
-      curve, // 경로
-      100, // 튜브의 길이 방향 세그먼트 수
-      this.ballRadius, // 반지름
-      this.segments, // 튜브 단면의 세그먼트 수
-      true // 닫힘 여부
-    );
-    const material = new THREE.LineBasicMaterial({ color: 0xff0000 });
-    const curveObject = new THREE.Mesh(geometry, material);
-
-    return curveObject;
   }
 
   update() {
@@ -177,6 +134,7 @@ class BaseballSystem extends THREE.Group {
         this.trajectoryGroup.clear();
         const material = new THREE.LineBasicMaterial({
           color: 0xff0000,
+          side: THREE.DoubleSide,
         });
         this.trajectoryGroup.add(new THREE.Mesh(geometry, material));
       }
