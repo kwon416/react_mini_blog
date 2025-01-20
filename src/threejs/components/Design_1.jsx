@@ -21,7 +21,7 @@ function Design_1(props) {
       1000
     );
     camera.position.y = 2;
-    camera.position.z = 25;
+    camera.position.z = 10;
 
     // const axesHelper = new THREE.AxesHelper(5);
     // scene.add(axesHelper);
@@ -29,7 +29,10 @@ function Design_1(props) {
     // const gridHelper = new THREE.GridHelper(80, 80);
     // scene.add(gridHelper);
 
+    // 헬퍼 추가 (축, 그리드)
+    scene.add(new THREE.AxesHelper(5), new THREE.GridHelper(80, 80));
     let stats = new Stats();
+
     document.body.append(stats.domElement);
 
     const controls = new OrbitControls(camera, renderer.domElement);
@@ -62,8 +65,7 @@ function Design_1(props) {
       "models/design/baseballstadium.glb",
       function (gltf) {
         const model = gltf.scene;
-        model.scale.set(20, 20, 20);
-        model.position.set(0, 0, 6);
+
         scene.add(model);
       },
       undefined,
@@ -74,25 +76,11 @@ function Design_1(props) {
 
     // 야구공 모델 로딩
     loader.load(
-      "models/design/baseballnew.glb",
-      function (gltf) {
-        const model = gltf.scene;
-        // model.scale.set(20, 20, 20);
-        model.position.set(0, 2, 19);
-        scene.add(model);
-      },
-      undefined,
-      function (error) {
-        console.error(error);
-      }
-    );
-    // 야구공 모델 로딩
-    loader.load(
       "models/design/ball.glb",
       function (gltf) {
         const model = gltf.scene;
         // model.scale.set(20, 20, 20);
-        model.position.set(0, 2, 22);
+        model.position.set(0, 2, 2);
         scene.add(model);
       },
       undefined,
@@ -106,7 +94,8 @@ function Design_1(props) {
       "models/design/strike_zone.glb",
       function (gltf) {
         const model = gltf.scene;
-        model.position.set(0, 0.2, 24);
+
+        // model.position.set(0, 0.2, 18);
         scene.add(model);
       },
       undefined,

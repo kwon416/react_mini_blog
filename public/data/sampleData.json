@@ -1,0 +1,49 @@
+{
+  "id": "e660f4e6-f6a1-4f08-bc04-4c433cd53c62",
+  "subject": "PlayByPlayFeed",
+  "data": {
+    "Version": "2.0.0",
+    "Time": "2024-10-28T02:18:56.3430888Z",
+    "SessionId": "b94f8ad1-343c-40a0-8692-0ddf7f353ec4",
+    "PlayId": "95a219d4-ad54-4626-b30f-b24d0a5c9643",
+    "TrackId": "a59c028a-48a6-41ca-9c95-5a419e3db931",
+    "TrackStartTime": "2024-10-28T02:18:55.202303Z",
+    "Kind": "Pitch",
+    "Pitch": {
+      "Release": {
+        "Speed": 129.6883,
+        "SpinRate": 2114.4578,
+        "Extension": 1.67965,
+        "VerticalAngle": -1.724532,
+        "HorizontalAngle": 1.966389,
+        "Height": 1.64646,
+        "Side": -0.63451
+      },
+      "Location": {
+        "Time": 0.479632,
+        "Height": 0.43162,
+        "Side": -0.47431,
+        "Speed": 117.00363
+      },
+      "Movement": {
+        "Horizontal": -40.0491,
+        "Vertical": -72.2866,
+        "InducedVertical": 40.513,
+        "SpinAxis": 132.18858,
+        "Tilt": "10:30"
+      },
+      "NineP": {
+        "X0": { "X": 0.58554, "Y": 15.24, "Z": 1.59493 },
+        "V0": { "X": -1.02549, "Y": -35.56644, "Z": -1.33836 },
+        "A0": { "X": 3.54364, "Y": 7.75376, "Z": -6.05265 },
+        "Pfxx": 21.7883,
+        "Pfxz": 23.0817
+      }
+    }
+  },
+  "eventType": "BallDataReceived",
+  "dataVersion": "2.0",
+  "metadataVersion": "1",
+  "eventTime": "2024-10-28T02:18:56.3431478Z",
+  "topic": "/subscriptions/7d239be7-3a5c-4342-9ef9-d1556665767d/resourceGroups/tmbaseball-organization-topics-prod/providers/Microsoft.EventGrid/topics/4407ee8b-dbd3-4072-e9fc-08d91711bafa"
+}

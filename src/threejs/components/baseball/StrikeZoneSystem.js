@@ -4,7 +4,8 @@ class StrikeZoneSystem extends THREE.Object3D {
   constructor(
     batterHeight = 1.8288,
     rubberOffset = 0.4572,
-    rubberToHomeplate = 18.44
+    rubberToHomeplate = 18.44,
+    pitchData
   ) {
     super();
 

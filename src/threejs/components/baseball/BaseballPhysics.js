@@ -10,34 +10,35 @@ class BaseballPhysics {
     this.MAGNUS_COEFFICIENT = 0.5;
   }
 
-  getPitchSettings(type) {
-    const settings = {
-      fastball: {
-        initialVelocity: 95, // mph
-        spinRate: 2500, // rpm
-        spinAxis: new THREE.Vector3(0, 1, 0), // 백스핀
-      },
-      curveball: {
-        initialVelocity: 80,
-        spinRate: 2800,
-        spinAxis: new THREE.Vector3(0, -1, 0), // 12-6 커브
-      },
-      slider: {
-        initialVelocity: 85,
-        spinRate: 2400,
-        spinAxis: new THREE.Vector3(0.7, -0.7, 0), // 사선 회전
-      },
-      changeup: {
-        initialVelocity: 85,
-        spinRate: 1800,
-        spinAxis: new THREE.Vector3(0, 1, 0.2), // 약한 백스핀
-      },
+  getPitchSettings(pitchData) {
+    if (!pitchData) return null;
+
+    const { Release, Movement } = pitchData.data.Pitch;
+
+    // Tilt 값을 각도로 변환 (예: "10:30" -> 315도)
+    const tiltToAngle = (tilt) => {
+      const [hour, minute] = tilt.split(":").map(Number);
+      return (hour % 12) * 30 + minute * 0.5 - 90;
     };
-    return settings[type];
+
+    // SpinAxis와 Tilt를 사용해 회전축 벡터 계산
+    const tiltAngle = tiltToAngle(Movement.Tilt);
+    const tiltRad = (tiltAngle * Math.PI) / 180;
+
+    // Y와 Z축을 바꿔서 회전축 벡터 생성
+    return {
+      initialVelocity: Release.Speed,
+      spinRate: Release.SpinRate,
+      spinAxis: new THREE.Vector3(
+        Math.cos(tiltRad),
+        0, // Z축이 Y축으로
+        Math.sin(tiltRad) // Y축이 Z축으로
+      ).normalize(),
+    };
   }
 
   calculatePosition(initialPos, initialVel, spinRate, spinAxis, time) {
-    // 중력에 의한 변위
+    // 중력을 Z축에서 Y축으로 변경
     const gravity = new THREE.Vector3(0, this.GRAVITY * time * time * 0.5, 0);
 
     // 초기 속도에 의한 변위
@@ -46,7 +47,7 @@ class BaseballPhysics {
     // 드래그 효과 계산
     const drag = this.calculateDragEffect(initialVel, time);
 
-    // 마그누스 효과 계산
+    // 마그누스 효과 계산 (회전축도 Y/Z가 바뀐 상태)
     const magnus = this.calculateMagnusEffect(
       initialVel,
       spinRate,
@@ -55,14 +56,12 @@ class BaseballPhysics {
     );
 
     // 최종 위치 계산
-    return (
-      new THREE.Vector3()
-        .copy(initialPos)
-        .add(velocity)
-        // .add(gravity)
-        .add(drag)
-        .add(magnus)
-    );
+    return new THREE.Vector3()
+      .copy(initialPos)
+      .add(velocity)
+      .add(gravity)
+      .add(drag)
+      .add(magnus);
   }
 
   calculateDragEffect(velocity, time) {

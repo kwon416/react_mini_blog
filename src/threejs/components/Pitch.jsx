@@ -5,6 +5,7 @@ import Stats from "three/examples/jsm/libs/stats.module";
 import StrikeZoneSystem from "./baseball/StrikeZoneSystem";
 import BaseballSystem from "./baseball/BaseballSystem";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 function Pitch() {
   useEffect(() => {
@@ -37,14 +38,26 @@ function Pitch() {
       0.1,
       100
     );
-    camera.position.set(0.2, 0.5, 13.5);
-    // camera.position.set(0, 0, -2);
+
     // 헬퍼 추가 (축, 그리드)
     scene.add(new THREE.AxesHelper(5), new THREE.GridHelper(80, 80));
 
     // 성능 모니터링
     const stats = new Stats();
     document.body.append(stats.domElement);
+
+    // 야구장 생성
+    const loader = new GLTFLoader();
+    loader.load(
+      "./models/design/baseballstadium.glb",
+      (gltf) => {
+        const model = gltf.scene;
+        model.position.y = -0.3;
+        scene.add(model);
+      },
+      undefined,
+      (error) => console.error("Error loading baseball field:", error)
+    );
 
     // 피칭 러버(투수판) 생성
     const rubberWidth = 0.1524;
@@ -59,15 +72,34 @@ function Pitch() {
     };
     scene.add(createPitchingRubber());
 
+    // 스트라이크 존 모델
+
+    // loader.load(
+    //   "./models/design/strike_zone.glb",
+    //   (gltf) => {
+    //     const model = gltf.scene;
+    //     model.scale.set(0.9, 0.9, 0.9);
+    //     model.position.set(0.15, 0, 19.73);
+    //     scene.add(model);
+    //   },
+    //   undefined,
+    //   (error) => console.error("Error loading baseball field:", error)
+    // );
+
     // 스트라이크 존 및 베이스볼 시스템 추가
     const batterHeight = 1.828; // 타자 신장
-    const rubberToHomeplate = 12.44; // 투수판에서 홈플레이트까지의 거리
+    const rubberToHomeplate = 18.44; // 투수판에서 홈플레이트까지의 거리 (규격:18.44m)
     const strikeZoneSystem = new StrikeZoneSystem(
       batterHeight,
       rubberOffset,
       rubberToHomeplate
     );
-    const baseballSystem = new BaseballSystem(rubberOffset, rubberToHomeplate);
+
+    const baseballSystem = new BaseballSystem(
+      rubberOffset,
+      rubberToHomeplate,
+      strikeZoneSystem.homePlate.position
+    );
     scene.add(strikeZoneSystem, baseballSystem);
 
     // 조명 설정
@@ -80,25 +112,44 @@ function Pitch() {
 
     // 카메라 컨트롤
     const controls = new OrbitControls(camera, renderer.domElement);
-    controls.target.set(0, 0.7, rubberOffset + rubberToHomeplate);
+    const orbitInitialPosition = new THREE.Vector3(
+      0,
+      0.7,
+      rubberOffset + rubberToHomeplate
+    );
+    controls.target.copy(orbitInitialPosition);
+    // controls.target.copy(strikeZoneSystem.homePlate.position);
     controls.enableDamping = true; // Smooth movement
     controls.dampingFactor = 0.1;
     controls.update();
+    const cameraInitialPosition = new THREE.Vector3(
+      0,
+      1.3,
+      rubberOffset + rubberToHomeplate + 1
+    );
+    camera.position.copy(cameraInitialPosition);
+
+    // 샘플 데이터를 fetch
+    fetch("./data/sampleData.json")
+      .then((response) => response.json())
+      .then((data) => {
+        baseballSystem.setPitchData(data);
+      })
+      .catch((error) => console.error("Error loading pitch data:", error));
 
     // GUI
     const gui = new GUI();
 
     // Camera Folder
     const cameraFolder = gui.addFolder("Camera");
-    const cameraPosition = { x: 0, y: 1, z: 5 };
     cameraFolder
-      .add(cameraPosition, "x", -10, 10)
+      .add(camera.position, "x", -3, 3)
       .onChange((value) => (camera.position.x = value));
     cameraFolder
-      .add(cameraPosition, "y", -10, 10)
+      .add(camera.position, "y", -1, 4)
       .onChange((value) => (camera.position.y = value));
     cameraFolder
-      .add(cameraPosition, "z", -10, 10)
+      .add(camera.position, "z", -20, 25)
       .onChange((value) => (camera.position.z = value));
     cameraFolder
       .add(camera, "fov", 1, 120)
@@ -106,6 +157,31 @@ function Pitch() {
     cameraFolder
       .add(camera, "zoom", 0.1, 3)
       .onChange(() => camera.updateProjectionMatrix());
+    cameraFolder
+      .add(
+        {
+          cameraInitialPosition: () => {
+            camera.position.copy(cameraInitialPosition);
+            camera.lookAt(strikeZoneSystem.homePlate.position);
+            controls.target.copy(orbitInitialPosition);
+          },
+        },
+        "cameraInitialPosition"
+      )
+      .name("Initial Position");
+    cameraFolder
+      .add(
+        {
+          ballStartPosition: () => {
+            camera.position.copy(baseballSystem.state.initialPosition);
+            camera.position.z -= 1;
+            camera.lookAt(strikeZoneSystem.homePlate.position);
+            controls.target.copy(orbitInitialPosition);
+          },
+        },
+        "ballStartPosition"
+      )
+      .name("ball Start Position");
     cameraFolder.open();
 
     // OrbitControls Folder
@@ -122,17 +198,8 @@ function Pitch() {
     // 키보드 이벤트 처리
     const handleKeyDown = (event) => {
       switch (event.key) {
-        case "1":
-          baseballSystem.startPitch("fastball");
-          break;
-        case "2":
-          baseballSystem.startPitch("curveball");
-          break;
-        case "3":
-          baseballSystem.startPitch("slider");
-          break;
-        case "4":
-          baseballSystem.startPitch("changeup");
+        case " ":
+          baseballSystem.startPitch();
           break;
         case "r":
           baseballSystem.resetBall();
@@ -188,10 +255,7 @@ function Pitch() {
         }}
       >
         <p>Controls:</p>
-        <p>1: Fastball</p>
-        <p>2: Curveball</p>
-        <p>3: Slider</p>
-        <p>4: Changeup</p>
+        <p>Space: Pitch</p>
         <p>R: Reset</p>
       </div>
     </>
