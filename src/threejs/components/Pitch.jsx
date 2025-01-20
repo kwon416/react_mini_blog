@@ -49,10 +49,10 @@ function Pitch() {
     // 야구장 생성
     const loader = new GLTFLoader();
     loader.load(
-      "./models/design/baseballstadium.glb",
+      "./models/design/1.glb",
       (gltf) => {
         const model = gltf.scene;
-        model.position.y = -0.3;
+        model.position.y = -0.2;
         scene.add(model);
       },
       undefined,
@@ -133,7 +133,7 @@ function Pitch() {
     fetch("./data/sampleData.json")
       .then((response) => response.json())
       .then((data) => {
-        baseballSystem.setPitchData(data);
+        baseballSystem.setPitchData(data, strikeZoneSystem.homePlate.position);
       })
       .catch((error) => console.error("Error loading pitch data:", error));
 

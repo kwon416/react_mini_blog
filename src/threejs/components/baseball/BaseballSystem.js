@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 import BaseballPhysics from "./BaseballPhysics";
+import { log } from "three/tsl";
 
 class BaseballSystem extends THREE.Group {
   static DEFAULTS = {
@@ -170,9 +171,14 @@ class BaseballSystem extends THREE.Group {
   setPitchData(data) {
     this.pitchData = data;
     if (data) {
-      // 센티미터를 미터로 변환 (Pfxx, Pfxz는 센티미터 단위)
-      const horizontalOffset = data.data.Pitch.NineP.Pfxx / 100;
-      const verticalOffset = data.data.Pitch.NineP.Pfxz / 100;
+      // Extract values from pitchData
+      const release = data.data.Pitch.Release;
+      const movement = data.data.Pitch.Movement;
+      const nineP = data.data.Pitch.NineP;
+
+      // Convert units if necessary (e.g., feet to meters)
+      const horizontalOffset = nineP.Pfxx / 100; // Convert from cm to m
+      const verticalOffset = nineP.Pfxz / 100; // Convert from cm to m
 
       // 시작 위치 설정
       this.state.initialPosition = new THREE.Vector3(
@@ -181,11 +187,23 @@ class BaseballSystem extends THREE.Group {
         this.strikeZonePosition.z - 12.192
       );
 
+      // Calculate initial velocity based on extracted data
+      const direction = new THREE.Vector3(
+        nineP.V0.X, // X velocity
+        nineP.V0.Y, // Y velocity
+        nineP.V0.Z // Z velocity
+      ).normalize();
+
+      this.state.initialVelocity = direction.multiplyScalar(
+        this.physics.mphToMs(release.Speed) // Convert speed to m/s
+      );
+
       // 스트라이크존 통과 지점
-      const x0 = data.data.Pitch.NineP.X0;
+      // TODO: 스트라이크존 위치에 따라 조정
+      const x0 = nineP.X0;
       this.strikeZonePassPoint = new THREE.Vector3(
-        x0.X,
-        x0.Z,
+        this.strikeZonePosition.x,
+        this.strikeZonePosition.y + 1,
         this.strikeZonePosition.z
       );
     }
